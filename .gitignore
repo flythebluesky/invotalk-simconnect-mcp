@@ -1,2 +1,6 @@
-server
 bin/
+*.exe
+*.exe~
+.env
+.claude/
+.idea/
