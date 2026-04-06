@@ -22,6 +22,8 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 )
 
+var version = "dev"
+
 func main() {
 	// Load config.
 	cfg, err := config.Load()
@@ -54,6 +56,8 @@ func main() {
 	}
 	logger := slog.New(slog.NewJSONHandler(logWriter, &slog.HandlerOptions{Level: level}))
 	slog.SetDefault(logger)
+
+	slog.Info("invotalk-simconnect-mcp", "version", version)
 
 	// Initialize SimConnect client.
 	client := simconnect.NewClient(cfg.SimConnectDLL)
