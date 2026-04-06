@@ -114,7 +114,7 @@ func (c *WinClient) IsConnected() bool {
 // dispatchLoop polls SimConnect for async responses and routes them to waiting callers.
 func (c *WinClient) dispatchLoop() {
 	for c.connected.Load() {
-		var pData uintptr
+		var pData unsafe.Pointer
 		var cbData uint32
 
 		hr, _, _ := procGetNextDispatch.Call(
@@ -122,7 +122,7 @@ func (c *WinClient) dispatchLoop() {
 			uintptr(unsafe.Pointer(&pData)),
 			uintptr(unsafe.Pointer(&cbData)),
 		)
-		if hr != HrOK || cbData == 0 || pData == 0 {
+		if hr != HrOK || cbData == 0 || pData == nil {
 			time.Sleep(10 * time.Millisecond)
 			continue
 		}
@@ -130,14 +130,16 @@ func (c *WinClient) dispatchLoop() {
 			continue
 		}
 
-		// First 4 bytes: size, next 4: version, next 4: ID (recv type)
-		recvID := *(*uint32)(unsafe.Pointer(pData + 8))
+		buf := unsafe.Slice((*byte)(pData), cbData)
+
+		// Bytes 8–11 hold the SIMCONNECT_RECV_ID.
+		recvID := binary.LittleEndian.Uint32(buf[8:12])
 
 		switch recvID {
 		case RecvIDSimObjectDataByType:
-			c.handleSimObjectData(pData, cbData)
+			c.handleSimObjectData(buf)
 		case RecvIDSystemState:
-			c.handleSystemState(pData, cbData)
+			c.handleSystemState(buf)
 		case RecvIDQuit:
 			c.connected.Store(false)
 			return
@@ -148,35 +150,31 @@ func (c *WinClient) dispatchLoop() {
 // handleSimObjectData processes a SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE message.
 // Header layout: size(4) version(4) id(4) requestID(4) objectID(4) defineID(4)
 // flags(4) entry(4) outof(4) defineCount(4) — data starts at offset 40.
-func (c *WinClient) handleSimObjectData(pData uintptr, cbData uint32) {
-	if cbData < 44 {
+func (c *WinClient) handleSimObjectData(buf []byte) {
+	if len(buf) < 44 {
 		return
 	}
-	reqID := *(*uint32)(unsafe.Pointer(pData + 12))
-	dataSize := cbData - 40
-	data := make([]byte, dataSize)
-	for i := uint32(0); i < dataSize; i++ {
-		data[i] = *(*byte)(unsafe.Pointer(pData + 40 + uintptr(i)))
-	}
+	reqID := binary.LittleEndian.Uint32(buf[12:16])
+	data := make([]byte, len(buf)-40)
+	copy(data, buf[40:])
 	c.deliver(reqID, data)
 }
 
 // handleSystemState processes a SIMCONNECT_RECV_SYSTEM_STATE message.
 // String data starts at offset 24, null-terminated, up to 256 bytes.
-func (c *WinClient) handleSystemState(pData uintptr, cbData uint32) {
-	if cbData < 20 {
+func (c *WinClient) handleSystemState(buf []byte) {
+	if len(buf) < 20 {
 		return
 	}
-	reqID := *(*uint32)(unsafe.Pointer(pData + 12))
-	strBytes := make([]byte, 0, 256)
-	for i := uintptr(0); i < 256 && (24+i) < uintptr(cbData); i++ {
-		b := *(*byte)(unsafe.Pointer(pData + 24 + i))
-		if b == 0 {
-			break
-		}
-		strBytes = append(strBytes, b)
+	reqID := binary.LittleEndian.Uint32(buf[12:16])
+	payload := buf[24:]
+	end := 0
+	for end < len(payload) && end < 256 && payload[end] != 0 {
+		end++
 	}
-	c.deliver(reqID, strBytes)
+	data := make([]byte, end)
+	copy(data, payload[:end])
+	c.deliver(reqID, data)
 }
 
 // deliver routes a response payload to the waiting caller for reqID.
