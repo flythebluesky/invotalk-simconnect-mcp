@@ -17,6 +17,7 @@ import (
 	mcpserver "github.com/flythebluesky/invotalk-simconnect-mcp/internal/mcp"
 	"github.com/flythebluesky/invotalk-simconnect-mcp/internal/mcp/tools"
 	"github.com/flythebluesky/invotalk-simconnect-mcp/internal/simconnect"
+	"github.com/flythebluesky/invotalk-simconnect-mcp/internal/update"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/mark3labs/mcp-go/server"
@@ -58,6 +59,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	slog.Info("invotalk-simconnect-mcp", "version", version)
+	go update.CheckLatest(version)
 
 	// Initialize SimConnect client.
 	client := simconnect.NewClient(cfg.SimConnectDLL)
