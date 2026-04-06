@@ -4,6 +4,7 @@
 
 # InvoTalk SimConnect MCP Server
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Go](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)](https://go.dev/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/flythebluesky/invotalk-simconnect-mcp)](https://goreportcard.com/report/github.com/flythebluesky/invotalk-simconnect-mcp)
 [![MCP](https://img.shields.io/badge/MCP-compatible-blueviolet)](https://modelcontextprotocol.io/)
