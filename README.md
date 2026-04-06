@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="invotalk_logo.svg" alt="InvoTalk" height="60" />
+</p>
+
 # InvoTalk SimConnect MCP Server
 
 MCP server that gives AI agents full control over Microsoft Flight Simulator 2024 via SimConnect.
