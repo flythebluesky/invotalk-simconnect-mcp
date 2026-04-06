@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="invotalk_logo.svg" alt="InvoTalk" height="100" />
+  <img src="invotalk_logo.svg" alt="InvoTalk" height="160" />
 </p>
 
 # InvoTalk SimConnect MCP Server
