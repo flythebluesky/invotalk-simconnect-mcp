@@ -39,5 +39,7 @@ jobs:
         with:
           files: |
             invotalk-simconnect-mcp.exe
+            LICENSE
+            THIRD-PARTY-LICENSES
             installer/Output/invotalk-simconnect-mcp-setup.exe
           generate_release_notes: true

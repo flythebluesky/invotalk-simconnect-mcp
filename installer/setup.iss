@@ -22,6 +22,8 @@ ArchitecturesInstallIn64BitMode=x64compatible
 
 [Files]
 Source: "..\invotalk-simconnect-mcp.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\THIRD-PARTY-LICENSES"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\InvoTalk SimConnect MCP"; Filename: "{app}\invotalk-simconnect-mcp.exe"
