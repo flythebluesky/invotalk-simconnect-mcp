@@ -28,8 +28,8 @@ func TestLoadDefaults(t *testing.T) {
 	if !cfg.TLSEnabled {
 		t.Error("TLSEnabled = false, want true")
 	}
-	if cfg.SimConnectDLL != "SimConnect.dll" {
-		t.Errorf("SimConnectDLL = %q, want SimConnect.dll", cfg.SimConnectDLL)
+	if cfg.SimConnectDLL != "" {
+		t.Errorf("SimConnectDLL = %q, want empty (auto-detect)", cfg.SimConnectDLL)
 	}
 }
 
