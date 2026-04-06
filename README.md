@@ -35,6 +35,27 @@ TRANSPORT=stdio ./bin/invotalk-simconnect-mcp
 TRANSPORT=http PORT=8443 TLS_ENABLED=false ./bin/invotalk-simconnect-mcp
 ```
 
+### Claude Desktop Integration
+
+1. Build the server (see above)
+2. Open Claude Desktop → Settings → Developer → **Edit Config**
+3. Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "simconnect": {
+      "command": "C:\\path\\to\\invotalk-simconnect-mcp.exe",
+      "env": {
+        "TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+4. Restart Claude Desktop — the SimConnect tools will appear in the toolbar
+
 ### Claude Code Integration
 
 Add to your Claude Code MCP settings:
