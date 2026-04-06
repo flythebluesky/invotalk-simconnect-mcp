@@ -20,18 +20,18 @@ const (
 
 // Data types (SIMCONNECT_DATATYPE)
 const (
-	DataTypeInvalid  = 0
-	DataTypeInt32    = 1
-	DataTypeInt64    = 2
-	DataTypeFloat32  = 3
-	DataTypeFloat64  = 4
-	DataTypeString8  = 5
-	DataTypeString32 = 6
-	DataTypeString64 = 7
-	DataTypeString128 = 8
-	DataTypeString256 = 9
-	DataTypeString260 = 10
-	DataTypeStringV  = 11
+	DataTypeInvalid      = 0
+	DataTypeInt32        = 1
+	DataTypeInt64        = 2
+	DataTypeFloat32      = 3
+	DataTypeFloat64      = 4
+	DataTypeString8      = 5
+	DataTypeString32     = 6
+	DataTypeString64     = 7
+	DataTypeString128    = 8
+	DataTypeString256    = 9
+	DataTypeString260    = 10
+	DataTypeStringV      = 11
 	DataTypeInitPosition = 12
 	DataTypeMarkerState  = 13
 	DataTypeWaypoint     = 14
@@ -60,15 +60,15 @@ const (
 
 // Recv message types (SIMCONNECT_RECV_ID)
 const (
-	RecvIDNull                  = 0
-	RecvIDException             = 1
-	RecvIDOpen                  = 2
-	RecvIDQuit                  = 3
-	RecvIDEvent                 = 4
-	RecvIDSimObjectData         = 8  // response to RequestDataOnSimObject
-	RecvIDSimObjectDataByType   = 9  // response to RequestDataOnSimObjectType
-	RecvIDSystemState           = 15
-	RecvIDEventFilename         = 19
+	RecvIDNull                = 0
+	RecvIDException           = 1
+	RecvIDOpen                = 2
+	RecvIDQuit                = 3
+	RecvIDEvent               = 4
+	RecvIDSimObjectData       = 8 // response to RequestDataOnSimObject
+	RecvIDSimObjectDataByType = 9 // response to RequestDataOnSimObjectType
+	RecvIDSystemState         = 15
+	RecvIDEventFilename       = 19
 )
 
 // SimConnect INITPOSITION struct layout for SetDataOnSimObject.

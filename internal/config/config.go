@@ -9,13 +9,13 @@ import (
 )
 
 type Config struct {
-	Transport     string   // "http" or "stdio"
+	Transport     string // "http" or "stdio"
 	Port          int
 	LogLevel      string
 	TLSEnabled    bool
 	BearerTokens  []string
 	AuthDisabled  bool
-	SimConnectDLL string   // optional DLL path override
+	SimConnectDLL string // optional DLL path override
 }
 
 func Load() (Config, error) {

@@ -55,12 +55,12 @@ func NewClient(dllPath string) Client {
 		simconnectDLL = syscall.NewLazyDLL(dllPath)
 	}
 	return &WinClient{
-		events:  make(map[string]uint32),
-		pending: make(map[uint32]chan []byte),
+		events:    make(map[string]uint32),
+		pending:   make(map[uint32]chan []byte),
 		nextEvent: 1,
 		nextDef:   1,
 		nextReq:   1,
-		dllPath: dllPath,
+		dllPath:   dllPath,
 	}
 }
 
@@ -126,7 +126,6 @@ func (c *WinClient) dispatchLoop() {
 			time.Sleep(10 * time.Millisecond)
 			continue
 		}
-
 		if cbData < 12 {
 			continue
 		}
@@ -136,60 +135,60 @@ func (c *WinClient) dispatchLoop() {
 
 		switch recvID {
 		case RecvIDSimObjectDataByType:
-			// Response to RequestDataOnSimObjectType.
-			// Offset 12: requestID, offset 16: objectID, offset 20: defineID,
-			// offset 24: flags, offset 28: entry, offset 32: count, offset 36: outof, offset 40: data starts
-			if cbData < 44 {
-				continue
-			}
-			reqID := *(*uint32)(unsafe.Pointer(pData + 12))
-			dataSize := cbData - 40
-			data := make([]byte, dataSize)
-			for i := uint32(0); i < dataSize; i++ {
-				data[i] = *(*byte)(unsafe.Pointer(pData + 40 + uintptr(i)))
-			}
-
-			c.pendingMu.Lock()
-			ch, ok := c.pending[reqID]
-			if ok {
-				delete(c.pending, reqID)
-			}
-			c.pendingMu.Unlock()
-
-			if ok {
-				ch <- data
-			}
-
+			c.handleSimObjectData(pData, cbData)
 		case RecvIDSystemState:
-			if cbData < 20 {
-				continue
-			}
-			reqID := *(*uint32)(unsafe.Pointer(pData + 12))
-			// String data starts at offset 24, up to 256 bytes.
-			strBytes := make([]byte, 0, 256)
-			for i := uintptr(0); i < 256 && (24+i) < uintptr(cbData); i++ {
-				b := *(*byte)(unsafe.Pointer(pData + 24 + i))
-				if b == 0 {
-					break
-				}
-				strBytes = append(strBytes, b)
-			}
-
-			c.pendingMu.Lock()
-			ch, ok := c.pending[reqID]
-			if ok {
-				delete(c.pending, reqID)
-			}
-			c.pendingMu.Unlock()
-
-			if ok {
-				ch <- strBytes
-			}
-
+			c.handleSystemState(pData, cbData)
 		case RecvIDQuit:
 			c.connected.Store(false)
 			return
 		}
+	}
+}
+
+// handleSimObjectData processes a SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE message.
+// Header layout: size(4) version(4) id(4) requestID(4) objectID(4) defineID(4)
+// flags(4) entry(4) outof(4) defineCount(4) — data starts at offset 40.
+func (c *WinClient) handleSimObjectData(pData uintptr, cbData uint32) {
+	if cbData < 44 {
+		return
+	}
+	reqID := *(*uint32)(unsafe.Pointer(pData + 12))
+	dataSize := cbData - 40
+	data := make([]byte, dataSize)
+	for i := uint32(0); i < dataSize; i++ {
+		data[i] = *(*byte)(unsafe.Pointer(pData + 40 + uintptr(i)))
+	}
+	c.deliver(reqID, data)
+}
+
+// handleSystemState processes a SIMCONNECT_RECV_SYSTEM_STATE message.
+// String data starts at offset 24, null-terminated, up to 256 bytes.
+func (c *WinClient) handleSystemState(pData uintptr, cbData uint32) {
+	if cbData < 20 {
+		return
+	}
+	reqID := *(*uint32)(unsafe.Pointer(pData + 12))
+	strBytes := make([]byte, 0, 256)
+	for i := uintptr(0); i < 256 && (24+i) < uintptr(cbData); i++ {
+		b := *(*byte)(unsafe.Pointer(pData + 24 + i))
+		if b == 0 {
+			break
+		}
+		strBytes = append(strBytes, b)
+	}
+	c.deliver(reqID, strBytes)
+}
+
+// deliver routes a response payload to the waiting caller for reqID.
+func (c *WinClient) deliver(reqID uint32, data []byte) {
+	c.pendingMu.Lock()
+	ch, ok := c.pending[reqID]
+	if ok {
+		delete(c.pending, reqID)
+	}
+	c.pendingMu.Unlock()
+	if ok {
+		ch <- data
 	}
 }
 
