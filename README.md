@@ -21,8 +21,8 @@ Read flight data, send cockpit commands, load flight plans, teleport aircraft, s
 ### Prerequisites
 
 - Go 1.24+
-- SimConnect.dll (from MSFS SDK — place next to the built exe)
 - MSFS 2024 running
+- MSFS SDK installed (Options → Developer Mode → install SDK in the sim). SimConnect.dll is auto-detected from the SDK path.
 
 ### Build & Run
 
@@ -59,6 +59,8 @@ TRANSPORT=http PORT=8443 TLS_ENABLED=false ./bin/invotalk-simconnect-mcp
 
 ### Claude Code Integration
 
+**Option 1: Local binary (stdio)**
+
 Add to your Claude Code MCP settings:
 
 ```json
@@ -68,6 +70,29 @@ Add to your Claude Code MCP settings:
       "command": "path/to/invotalk-simconnect-mcp",
       "env": {
         "TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Remote HTTP via mcp-remote**
+
+If the server is running in HTTP mode, connect using `npx mcp-remote`:
+
+```json
+{
+  "mcpServers": {
+    "simconnect": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:8443/mcp",
+        "--header",
+        "Authorization:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Bearer <your-token>"
       }
     }
   }
@@ -185,7 +210,7 @@ Environment variables (see `.env.example`):
 | `TLS_ENABLED` | `true` | Enable HTTPS |
 | `LOG_LEVEL` | `info` | Log verbosity |
 | `AUTH_BEARER_TOKENS` | `disabled` | Comma-separated tokens for HTTP auth |
-| `SIMCONNECT_DLL_PATH` | `SimConnect.dll` | Custom DLL path |
+| `SIMCONNECT_DLL_PATH` | *(auto-detect)* | Override DLL path (auto-searches exe dir, MSFS SDK paths) |
 
 ## Development
 

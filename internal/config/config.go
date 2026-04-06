@@ -24,7 +24,7 @@ func Load() (Config, error) {
 		Port:          envInt("PORT", 8443),
 		LogLevel:      envString("LOG_LEVEL", "info"),
 		TLSEnabled:    !strings.EqualFold(envString("TLS_ENABLED", "true"), "false"),
-		SimConnectDLL: envString("SIMCONNECT_DLL_PATH", "SimConnect.dll"),
+		SimConnectDLL: envString("SIMCONNECT_DLL_PATH", ""),
 	}
 
 	tokens := os.Getenv("AUTH_BEARER_TOKENS")

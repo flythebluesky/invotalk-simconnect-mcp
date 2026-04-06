@@ -51,16 +51,15 @@ type WinClient struct {
 }
 
 func NewClient(dllPath string) Client {
-	if dllPath != "" && dllPath != "SimConnect.dll" {
-		simconnectDLL = syscall.NewLazyDLL(dllPath)
-	}
+	resolved := findDLL(dllPath)
+	simconnectDLL = syscall.NewLazyDLL(resolved)
 	return &WinClient{
 		events:    make(map[string]uint32),
 		pending:   make(map[uint32]chan []byte),
 		nextEvent: 1,
 		nextDef:   1,
 		nextReq:   1,
-		dllPath:   dllPath,
+		dllPath:   resolved,
 	}
 }
 
@@ -73,7 +72,8 @@ func (c *WinClient) Connect() error {
 	}
 
 	if err := simconnectDLL.Load(); err != nil {
-		return fmt.Errorf("SimConnect.dll not found: %w", err)
+		return fmt.Errorf("SimConnect.dll not found (searched exe dir, MSFS2024_SDK, MSFS_SDK, and default paths). "+
+			"Install the MSFS SDK from Options > Developer Mode in Flight Simulator, or set SIMCONNECT_DLL_PATH: %w", err)
 	}
 
 	name, _ := syscall.BytePtrFromString("InvoTalk-MCP")

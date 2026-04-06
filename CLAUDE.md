@@ -59,7 +59,7 @@ All via environment variables. See `.env.example`.
 | `TLS_ENABLED` | `true` | Enable TLS for HTTP |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 | `AUTH_BEARER_TOKENS` | `disabled` | Comma-separated bearer tokens, or `disabled` |
-| `SIMCONNECT_DLL_PATH` | `SimConnect.dll` | Path to SimConnect DLL |
+| `SIMCONNECT_DLL_PATH` | *(auto-detect)* | Override DLL path (auto-searches exe dir, MSFS SDK paths) |
 
 ## Testing
 
