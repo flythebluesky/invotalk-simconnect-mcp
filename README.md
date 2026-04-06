@@ -181,8 +181,10 @@ Official MSFS SDK documentation for looking up supported events and variables:
 
 | Resource | Description |
 |----------|-------------|
-| [SimConnect Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm) | Full list of all SimConnect events — use these with `send_event` |
-| [Simulation Variables](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm) | All SimVars — use these with `get_variables` / `set_variable` |
+| [Supported Events](internal/simconnect/events.go) | 328 events catalogued in this server — use with `send_event` |
+| [Supported Variables](internal/simconnect/vars.go) | 242 SimVars catalogued in this server — use with `get_variables` / `set_variable` |
+| [SimConnect Event IDs](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Event_IDs.htm) | Full MSFS SDK event reference |
+| [Simulation Variables](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Simulation_Variables.htm) | Full MSFS SDK SimVar reference |
 | [Aircraft SimVars](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_SimVars.htm) | Aircraft-specific variables (engines, controls, systems) |
 | [Environment SimVars](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Environment_SimVars.htm) | Weather, time, and world variables |
 | [Camera SimVars](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_SimVars.htm) | Camera position and view state |
